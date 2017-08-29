@@ -26,6 +26,7 @@ public class Autonomous {
 	}
 	public static AutonomousRoutine getAuto(String name){
 		AutonomousRoutine finalRoutine;
+		// TODO: Change this to method calls to an inheritance hierarchy.
 		switch(name){
 		case "1 Gear Left":
 			
