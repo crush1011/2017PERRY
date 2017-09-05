@@ -17,14 +17,16 @@ import java.util.HashMap;
 
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedController;
+import jerry.code.SysObj.Solenoid;
 
 public class Systems {
 	
 	private static Systems systems;
-	HashMap<SysObj, SpeedController> subsystems;
+	HashMap<SysObj, Object> subsystems;
 	
 	private Systems(){
-		
+		subsystems.put(SysObj.Solenoid.COLLECTOR_ANGLE, new Solenoid(7));
+		subsystems.put(SysObj.Solenoid.COLLECTOR_CLAMP, new Solenoid(3));
 	}
 	
 	// This returns the instance of Systems, or creates the instnace if there is
