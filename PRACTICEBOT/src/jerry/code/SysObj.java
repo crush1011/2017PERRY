@@ -10,6 +10,7 @@
 
 package jerry.code;
 
+// This is an enum for all of the major systems
 public enum SysObj {
 
 	SOLENOID("solenoid"), 
@@ -26,5 +27,7 @@ public enum SysObj {
 	// This is the sub-enums for the SOLENOID enum
 	public enum Solenoid {
 		
+		COLLECTOR_ANGLE(SysObj.SOLENOID, "CollectorAngle"),
+		COLLECTOR_
 	}
 }
