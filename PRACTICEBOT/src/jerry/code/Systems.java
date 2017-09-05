@@ -103,6 +103,17 @@ public class Systems {
 	public HashMap<SysObj, Object> getHashMap() {
 		return subsystems;
 	}
+	
+	// This returns the instance of Systems, or creates the instnace if there is
+	// none.
+	public Systems getInstance(){
+		
+		if (systems == null) {
+			systems = new Systems();
+		}
+		return systems;
+		
+	}
 
 }
 
