@@ -15,6 +15,8 @@ package jerry.code;
 
 import java.util.HashMap;
 
+import com.ctre.CANTalon;
+
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.SpeedController;
 import jerry.code.SysObj.Solenoid;
@@ -24,10 +26,14 @@ public class Systems {
 	private static Systems systems;
 	HashMap<SysObj, Object> subsystems;
 	
+	CANTalon betsy;
+	CANTalon daisy;
 	private Systems(){
 		subsystems.put(SysObj.Solenoid.COLLECTOR_ANGLE, new Solenoid(7));
 		subsystems.put(SysObj.Solenoid.COLLECTOR_CLAMP, new Solenoid(3));
+		
 	}
+	
 	
 	// This returns the instance of Systems, or creates the instnace if there is
 	// none.
