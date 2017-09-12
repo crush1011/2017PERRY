@@ -30,7 +30,7 @@ public interface SysObj {
 	}
 	
 	// This is the enum for the MotorControllers
-	public enum MotorController {
+	public enum MotorController implements SysObj{
 		
 		LEFT_1("left1"), LEFT_2("left2"), LEFT_3("left3"),
 		RIGHT_1("right1"), RIGHT_2("right2"), RIGHT_3("right3"),
@@ -46,11 +46,12 @@ public interface SysObj {
 	}
 	
 	// This is the enum for the sensors
-	public enum Sensors {
+	public enum Sensors implements SysObj{
 		
 		DRIVER_STICK("DriverJoystick"), OPERATOR_STICK("OpertatorJoystick"),
 		NAVX("NavX"), PDP("PowerDistributionPanel"),
-		ARM_ENCODER("GearArmEncoder"), LEFT_ENCODER("LeftEncoder"), RIGHT_ENCODER("RightEncoder"),
+		ARM_ENCODER("GearArmEncoder"), SCALING_ENCODER("ScalingEncoder"), 
+		LEFT_ENCODER("LeftEncoder"), RIGHT_ENCODER("RightEncoder"),
 		VISION("Vision");
 		
 		public String sensor;
