@@ -98,6 +98,11 @@ public class Systems {
 		return systems;
 		
 	}
+	
+	// returns the hashmap containing all the subsystems
+	public HashMap<SysObj, Object> getHashMap() {
+		return subsystems;
+	}
 
 }
 
