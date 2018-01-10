@@ -1,19 +1,23 @@
 package org.usfirst.frc.team1011.robot;
 
 
+import static frc.team1011.ruben.Resources.limit;
+import static org.usfirst.frc.team1011.robot.Robot.resources;
+
+import com.ctre.phoenix.motorcontrol.IMotorController;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
+//import com.ctre.CANTalon;
+
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.TalonSRX;
-import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.PIDSubsystem;
 import edu.wpi.first.wpilibj.interfaces.Potentiometer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team1011.ruben.SubSystem;
-import static org.usfirst.frc.team1011.robot.Robot.*;
-
-import com.ctre.CANTalon;
-
-import static frc.team1011.ruben.Resources.*;
 
 public class GearCollectorArm  extends PIDSubsystem implements SubSystem{
 
@@ -186,13 +190,13 @@ public class GearCollectorArm  extends PIDSubsystem implements SubSystem{
 			case "Pot":
 				PIDEnabled = false;
 				PotEnabled = true;
-				((CANTalon) angleMotor).enableBrakeMode(false);
+				((WPI_TalonSRX) angleMotor).setNeutralMode(NeutralMode.Coast);
 				
 				break;
 			case "Manual":
 				PIDEnabled = false;
 				PotEnabled = false;
-				((CANTalon) angleMotor).enableBrakeMode(true);
+				((WPI_TalonSRX) angleMotor).setNeutralMode(NeutralMode.Coast);
 				
 				break;
 				

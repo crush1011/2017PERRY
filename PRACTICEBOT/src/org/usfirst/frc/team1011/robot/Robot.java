@@ -3,14 +3,9 @@ package org.usfirst.frc.team1011.robot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 
-import org.opencv.core.Mat;
-import org.opencv.core.MatOfPoint;
-import org.opencv.videoio.VideoCapture;
-
-import com.ctre.CANTalon;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 
 import edu.wpi.cscore.CvSink;
@@ -22,28 +17,19 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.PWM;
+import edu.wpi.first.wpilibj.PWMTalonSRX;
 import edu.wpi.first.wpilibj.PowerDistributionPanel;
 import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.wpilibj.Servo;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.VictorSP;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.vision.VisionPipeline;
-import edu.wpi.first.wpilibj.vision.VisionThread;
-import frc.team1011.ruben.AutonDriveForMeasurement;
-import frc.team1011.ruben.AutonDriveStraight;
-import frc.team1011.ruben.AutonStraightMeasurement;
-import frc.team1011.ruben.DriveSemiCircle;
 import frc.team1011.ruben.DriveTrain;
-import frc.team1011.ruben.GreybotsAuto;
 import frc.team1011.ruben.Resources;
 import frc.team1011.ruben.SubSystem;
 import frc.team1011.ruben.TeleDriveForMeasurement;
-import vison.GripVisionCode;
 import vison.VisionLoop;
 
 /**
@@ -110,25 +96,27 @@ public class Robot extends IterativeRobot {
 
 		// motor controller inits
 		HashMap<String, SpeedController> motorControllers = new HashMap<>();
-		CANTalon l1 = new CANTalon(1); //1    p3
+		WPI_TalonSRX l1 = new WPI_TalonSRX(3); //1    p3
 		motorControllers.put("l1", l1);
-		CANTalon l2 = new CANTalon(3);//3   p4
-		motorControllers.put("l2", l2);
-		CANTalon l3 = new CANTalon(5);//5   p5
-		motorControllers.put("l3", l3);
-		CANTalon r1 = new CANTalon(2);//2     p0
-		motorControllers.put("r1", r1);
-		CANTalon r2 = new CANTalon(4);//4    p1
-		motorControllers.put("r2", r2);
-		CANTalon r3 = new CANTalon(6);//6    p2
-		motorControllers.put("r3", r3);
-		CANTalon gearArmVictor = new CANTalon(0);
+		WPI_TalonSRX l2 = new WPI_TalonSRX(3);//3   p4
+		motorControllers.put("l2",  l2);
+		WPI_TalonSRX l3 = new WPI_TalonSRX(5);//5   p5
+		motorControllers.put("l3",  l3);
+		WPI_TalonSRX r1 = new WPI_TalonSRX(0);//2     p0
+		motorControllers.put("r1",  r1);
+		WPI_TalonSRX r2 = new WPI_TalonSRX(1);//4    p1
+		motorControllers.put("r2",  r2);
+		WPI_TalonSRX r3 = new WPI_TalonSRX(2);//6    p2
+		motorControllers.put("r3",  r3);
+		WPI_TalonSRX gearArmVictor = new WPI_TalonSRX(0);
 		//VictorSP gearArmVictor = new VictorSP(0);    
-		motorControllers.put("GearCollectorMotor", gearArmVictor);
+		motorControllers.put("GearCollectorMotor",  gearArmVictor);
 		Spark winch1 = new Spark(6);
 		motorControllers.put("Winch1", winch1);
 		Spark winch2 = new Spark(7);
 		motorControllers.put("Winch2", winch2);
+		Spark winch3 = new Spark(8);
+		motorControllers.put("Winch3", winch3);
 		
 		
 		//LEDS
@@ -176,6 +164,7 @@ public class Robot extends IterativeRobot {
 		cvSink = cameraServer.getVideo();
 		visionLoop = new VisionLoop(cvSink);
 		sensors.put("vision", visionLoop);
+		
 		
 		
 		resources = new Resources(motorControllers, solenoids, new HashMap<String, SubSystem>(), sensors);
@@ -307,6 +296,7 @@ public class Robot extends IterativeRobot {
 	int count = 0;
 	int stageScaling = 0;
 	double encoderScaling = 0;
+	boolean collectorForward = false,  collectorBackward = false;
 
 	public void teleopPeriodic() {
 		driveTrain.turning=false;
@@ -316,10 +306,30 @@ public class Robot extends IterativeRobot {
 		//SmartDashboard.putNumber("Gyro", navx.getFusedHeading());	
 		SmartDashboard.putNumber("Gyro", navx.getAngle());	
 		
-		boolean current;
+		boolean current = false;
+		
+		
+		if (operatorJoystick.getRawButton(3) && !collectorBackward) {
+			resources.getMotorController("Winch1").set(1.0);
+			resources.getMotorController("Winch2").set(1.0);
+			resources.getMotorController("Winch3").set(1.0);
+			collectorForward = true;
+		} else if (operatorJoystick.getRawButton(4) && !collectorForward) {
+			resources.getMotorController("Winch1").set(-1.0);
+			resources.getMotorController("Winch2").set(-1.0);
+			resources.getMotorController("Winch3").set(-1.0);
+			collectorBackward = true;
+		}  else {
+			resources.getMotorController("Winch1").set(0.0);
+			resources.getMotorController("Winch2").set(0.0);
+			resources.getMotorController("Winch3").set(0.0);
+			collectorForward = collectorBackward = false;
+		}
+		
+		
 
 			
-		current = operatorJoystick.getRawAxis(2) > 0 ? true : false;
+		/*current = operatorJoystick.getRawAxis(2) > 0 ? true : false;
 		if (current != pastLTrigger && current) {
 			gca.setAngle(resources.COLLECTING_POSITION);
 			gch.toggleClamp(false);
@@ -394,7 +404,7 @@ public class Robot extends IterativeRobot {
 			gca.displacement++;
 		}
 		pastDPad = dpad;
-		
+		*/
 
 		/*current = driverJoystick.getRawButton(3);
 		if (current) {
